@@ -9,7 +9,7 @@ import numpy as np
 import torch
 import torchvision
 from termcolor import colored
-from torch.utils.tensorboard import SummaryWriter
+import wandb
 
 COMMON_TRAIN_FORMAT = [('episode', 'E', 'int'), ('step', 'S', 'int'),
                        ('episode_reward', 'R', 'float'),
@@ -125,9 +125,11 @@ class Logger(object):
                 except:
                     print("logger.py warning: Unable to remove tb directory")
                     pass
-            self._sw = SummaryWriter(tb_dir)
+            #self._sw = SummaryWriter(tb_dir)
+            self._wandb = wandb.init(project='baselines', name='drq')
         else:
-            self._sw = None
+            #self._sw = None
+            self._wandb = None
         # each agent has specific output format for training
         assert agent in AGENT_TRAIN_FORMAT
         train_format = COMMON_TRAIN_FORMAT + AGENT_TRAIN_FORMAT[agent]
@@ -147,27 +149,39 @@ class Logger(object):
 
     def _try_sw_log(self, key, value, step):
         step = self._update_step(step)
-        if self._sw is not None:
-            self._sw.add_scalar(key, value, step)
+        #if self._sw is not None:
+        #    self._sw.add_scalar(key, value, step)
+        if self._wandb is not None:
+            self._wandb.log({key: value}, step=step)
 
     def _try_sw_log_image(self, key, image, step):
         step = self._update_step(step)
-        if self._sw is not None:
-            assert image.dim() == 3
-            grid = torchvision.utils.make_grid(image.unsqueeze(1))
-            self._sw.add_image(key, grid, step)
+        #if self._sw is not None:
+        #    assert image.dim() == 3
+        #    grid = torchvision.utils.make_grid(image.unsqueeze(1))
+        #    self._sw.add_image(key, grid, step)
+        if self._wandb is not None:
+            try:
+                self._wandb.log({key: wandb.Image(image)}, step=step)
+            except TypeError as e:
+                print("logger.py warning: Unable to log image")
+                print(e)
 
     def _try_sw_log_video(self, key, frames, step):
         step = self._update_step(step)
-        if self._sw is not None:
-            frames = torch.from_numpy(np.array(frames))
-            frames = frames.unsqueeze(0)
-            self._sw.add_video(key, frames, step, fps=30)
+        #if self._sw is not None:
+        #    frames = torch.from_numpy(np.array(frames))
+        #    frames = frames.unsqueeze(0)
+        #    self._sw.add_video(key, frames, step, fps=30)
+        if self._wandb is not None:
+            self._wandb.log({key: wandb.Video(frames, step=step, fps=30)}, step=step)
 
     def _try_sw_log_histogram(self, key, histogram, step):
         step = self._update_step(step)
-        if self._sw is not None:
-            self._sw.add_histogram(key, histogram, step)
+        #if self._sw is not None:
+        #    self._sw.add_histogram(key, histogram, step)
+        if self._wandb is not None:
+            self._wandb.log({key: wandb.Histogram(histogram.detach().cpu().numpy())}, step=step)
 
     def log(self, key, value, step, n=1, log_frequency=1):
         if not self._should_log(step, log_frequency):

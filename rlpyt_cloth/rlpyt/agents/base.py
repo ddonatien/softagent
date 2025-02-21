@@ -36,6 +36,11 @@ class BaseAgent:
     def __call__(self, observation, prev_action, prev_reward):
         """Returns values from model forward pass on training data."""
         raise NotImplementedError
+    
+    def get_param_count(self):
+        para_count = dict()
+        para_count['model'] = sum(p.numel() for p in self.model.parameters())
+        return para_count
 
     def initialize(self, env_spaces, share_memory=False, **kwargs):
         """In this default setup, self.model is treated as the model needed

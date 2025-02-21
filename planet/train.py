@@ -49,6 +49,7 @@ def run_task(arg_vv, log_dir, exp_name):
     if vv['algorithm'] == 'planet':
         from planet.planet_agent import PlaNetAgent
         agent = PlaNetAgent(env, vv, device)
+        logger.log(f"Agent param count: {agent.get_param_count()}")
         agent.train(train_epoch=vv['train_epoch'])
         env.close()
     elif vv['algorithm'] == 'dreamer':

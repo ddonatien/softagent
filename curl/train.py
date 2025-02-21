@@ -5,6 +5,7 @@ import time
 import json
 import copy
 
+from scipy import stats
 from curl import utils
 from curl.logger import Logger
 
@@ -68,6 +69,13 @@ def get_info_stats(infos):
     for key in infos[0][0].keys():
         stat_dict[key + '_mean'] = np.mean(np.array(stat_dict_all[key]))
         stat_dict[key + '_final'] = np.mean(stat_dict_all[key][:, -1])
+        stat_dict[key + '_iqm'] = stats.trim_mean(stat_dict_all[key], 0.25, axis=None)
+        stat_dict[key + '_iqm_final'] = stats.trim_mean(stat_dict_all[key][:, -1], 0.25)
+        stat_dict[key + '_median'] = np.median(stat_dict_all[key][:, -1])
+        if key == 'normalized_performance':
+            stat_dict[key + '_success_rate_75%'] = np.count_nonzero(stat_dict_all[key] >= 0.75) / stat_dict_all[key].size
+            stat_dict[key + '_success_rate_85%'] = np.count_nonzero(stat_dict_all[key] >= 0.85) / stat_dict_all[key].size
+            stat_dict[key + '_success_rate_95%'] = np.count_nonzero(stat_dict_all[key] >= 0.95) / stat_dict_all[key].size
     return stat_dict
 
 
@@ -213,6 +221,8 @@ def main(args):
     )
 
     L = Logger(args.work_dir, use_tb=args.save_tb, chester_logger=logger)
+    for key, val in agent.get_param_count().items():
+        L.log('train/param_count_' + key, val, 0)
 
     episode, episode_reward, done, ep_info = 0, 0, True, []
     start_time = time.time()

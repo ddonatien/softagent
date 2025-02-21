@@ -1,4 +1,5 @@
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
+import wandb
 from collections import defaultdict
 import json
 import os
@@ -97,9 +98,11 @@ class Logger(object):
             tb_dir = os.path.join(log_dir, 'tb')
             if os.path.exists(tb_dir):
                 shutil.rmtree(tb_dir)
-            self._sw = SummaryWriter(tb_dir)
+            #self._sw = SummaryWriter(tb_dir)
+            self._wandb = wandb.init(project='baselines', name='curl')
         else:
-            self._sw = None
+            #self._sw = None
+            self._wandb = None
         self._train_mg = MetersGroup(
             os.path.join(log_dir, 'train.log'),
             formating=FORMAT_CONFIG[config]['train']
@@ -111,24 +114,33 @@ class Logger(object):
         self.chester_logger = chester_logger
 
     def _try_sw_log(self, key, value, step):
-        if self._sw is not None:
-            self._sw.add_scalar(key, value, step)
+        #if self._sw is not None:
+        #    self._sw.add_scalar(key, value, step)
+        if self._wandb is not None:
+            self._wandb.log({key: value}, step=step)
 
     def _try_sw_log_image(self, key, image, step):
-        if self._sw is not None:
-            assert image.dim() == 3
-            grid = torchvision.utils.make_grid(image.unsqueeze(1))
-            self._sw.add_image(key, grid, step)
+        # if self._sw is not None:
+        #     assert image.dim() == 3
+        #     grid = torchvision.utils.make_grid(image.unsqueeze(1))
+        #     self._sw.add_image(key, grid, step)
+        if self._wandb is not None:
+            self._wandb.log({key: wandb.Image(image)}, step=step)
+
 
     def _try_sw_log_video(self, key, frames, step):
-        if self._sw is not None:
-            frames = torch.from_numpy(np.array(frames))
-            frames = frames.unsqueeze(0)
-            self._sw.add_video(key, frames, step, fps=30)
+        # if self._sw is not None:
+        #     frames = torch.from_numpy(np.array(frames))
+        #     frames = frames.unsqueeze(0)
+        #     self._sw.add_video(key, frames, step, fps=30)
+        if self._wandb is not None:
+            self._wandb.log({key: wandb.Video(frames, step=step, fps=30)}, step=step)
 
     def _try_sw_log_histogram(self, key, histogram, step):
-        if self._sw is not None:
-            self._sw.add_histogram(key, histogram, step)
+        # if self._sw is not None:
+        #     self._sw.add_histogram(key, histogram, step)
+        if self._wandb is not None:
+            self._wandb.log({key: wandb.Histogram(histogram.detach().cpu().numpy())}, step=step)
 
     def log(self, key, value, step, n=1):
         assert key.startswith('train') or key.startswith('eval')

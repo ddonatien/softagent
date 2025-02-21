@@ -33,7 +33,7 @@ def run_task(vv, log_dir=None, exp_name=None):
     assert logdir is not None
     os.makedirs(logdir, exist_ok=True)
 
-    default_cfg = yaml.load(open('drq/config.yml', 'r'))
+    default_cfg = yaml.full_load(open('drq/config.yml', 'r'))
     cfg = update_config(default_cfg, vv)
     cfg = update_env_kwargs(cfg)
     workspace = Workspace(vv_to_args(cfg))
@@ -110,6 +110,8 @@ class Workspace(object):
                                           self.env.action_space.shape,
                                           cfg.replay_buffer_capacity,
                                           self.cfg.image_pad, self.device)
+        for key, val in self.agent.get_param_count().items():
+            self.logger.log('train/param_count_' + key, val, 0)
 
         # self.video_recorder = VideoRecorder(
         #     self.work_dir if cfg.save_video else None)
@@ -165,7 +167,7 @@ class Workspace(object):
 
         self.logger.log('eval/episode_reward', average_episode_reward,
                         self.step)
-        self.logger.dump(self.step)
+        # self.logger.dump(self.step)
 
         all_frames = np.array(all_frames).swapaxes(0, 1)
         all_frames = np.array([make_grid(np.array(frame), nrow=2, padding=3) for frame in all_frames])
@@ -195,8 +197,8 @@ class Workspace(object):
                                         time.time() - start_time, self.step)
                         for key, val in get_info_stats([ep_info]).items():
                             self.logger.log('train/info_' + key, val, self.step)
-                        self.logger.dump(
-                            self.step, save=(self.step > self.cfg.num_seed_steps))
+                        # self.logger.dump(
+                        #     self.step, save=(self.step > self.cfg.num_seed_steps))
 
                     start_time = time.time()
 

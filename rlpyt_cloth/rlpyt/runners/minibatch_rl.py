@@ -72,6 +72,8 @@ class MinibatchRlBase(BaseRunner):
             world_size=world_size,
             rank=rank,
         )
+        logger.log(f"Runner {getattr(self, 'rank', '')} agent param count: "
+                   f"{self.agent.get_param_count()}.")
         self.initialize_logging()
         return n_itr
 

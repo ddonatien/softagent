@@ -92,7 +92,9 @@ def run_task(vv, log_dir, exp_name):
         logger.log('episode ' + str(i))
         obs = env.reset()
         policy.reset()
+        logger.log('reset')
         initial_state = env.get_state()
+        logger.log('initial_state')
         action_traj = []
         infos = []
         for j in range(env.horizon):

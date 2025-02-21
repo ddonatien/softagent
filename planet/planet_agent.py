@@ -64,6 +64,14 @@ class PlaNetAgent(object):
         self.global_prior = Normal(torch.zeros(vv['batch_size'], vv['state_size'], device=device),
                                    torch.ones(vv['batch_size'], vv['state_size'], device=device))  # Global prior N(0, I)
         self.free_nats = torch.full((1,), vv['free_nats'], device=device)  # Allowed deviation in KL divergence
+    
+    def get_param_count(self):
+        para_count = dict()
+        para_count['transition_model'] = sum(p.numel() for p in self.transition_model.parameters())
+        para_count['observation_model'] = sum(p.numel() for p in self.observation_model.parameters())
+        para_count['reward_model'] = sum(p.numel() for p in self.reward_model.parameters())
+        para_count['encoder'] = sum(p.numel() for p in self.encoder.parameters())
+        return para_count   
 
     def _init_replay_buffer(self, experience_replay_path=None):
         if experience_replay_path is not None:

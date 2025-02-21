@@ -203,6 +203,12 @@ class DRQAgent(object):
 
         self.train()
         self.critic_target.train()
+    
+    def get_param_count(self):
+        para_count = dict()
+        para_count['actor'] = sum(p.numel() for p in self.actor.parameters())
+        para_count['critic'] = sum(p.numel() for p in self.critic.parameters())
+        return para_count
 
     def train(self, training=True):
         self.training = training
