@@ -1,4 +1,4 @@
-name: softgym
+name: defo
 channels:
   - defaults
 dependencies:
@@ -16,7 +16,7 @@ dependencies:
 # SoftAgent specific
   - pip:
       - torch==1.7.1
-        # - opencv-python==5.1.1
+      - opencv-python==4.11.0.86
       - pyquaternion==0.9.5 
       - sk-video
       - imageio-ffmpeg

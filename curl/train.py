@@ -195,7 +195,10 @@ def main(args):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    action_shape = env.action_space.shape
+    if type(env.action_space) == tuple:
+        action_shape = env.action_space[1].shape
+    else:
+        action_shape = env.action_space.shape
 
     if args.encoder_type == 'pixel':
         obs_shape = (3, args.image_size, args.image_size)
@@ -228,7 +231,6 @@ def main(args):
     start_time = time.time()
     for step in range(args.num_train_steps):
         # evaluate agent periodically
-
         if step % args.eval_freq == 0:
             L.log('eval/episode', episode, step)
             evaluate(env, agent, video_dir, args.num_eval_episodes, L, step, args)
@@ -262,19 +264,16 @@ def main(args):
         else:
             with utils.eval_mode(agent):
                 action = agent.sample_action(obs)
-
         # run training update
         if step >= args.init_steps:
             num_updates = 1
             for _ in range(num_updates):
                 agent.update(replay_buffer, L, step)
         next_obs, reward, done, info = env.step(action)
-
         # allow infinit bootstrap
         ep_info.append(info)
         done_bool = 0 if episode_step + 1 == env.horizon else float(done)
         episode_reward += reward
         replay_buffer.add(obs, action, reward, next_obs, done_bool)
-
         obs = next_obs
         episode_step += 1

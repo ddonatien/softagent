@@ -84,6 +84,8 @@ def main():
     args.scale_reward = reward_scales[env_name]
     args.clip_obs = clip_obs[env_name] if obs_mode == 'key_point' else None
     args.env_kwargs = env_arg_dict[env_name]
+    args.env_kwargs["action_mode"] = "pickandplace"
+    args.env_kwargs["num_picker"] = 1
 
     run_task(args.__dict__, args.log_dir, args.exp_name)
 

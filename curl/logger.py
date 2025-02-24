@@ -103,6 +103,7 @@ class Logger(object):
         else:
             #self._sw = None
             self._wandb = None
+        print("Log dir: ", log_dir)
         self._train_mg = MetersGroup(
             os.path.join(log_dir, 'train.log'),
             formating=FORMAT_CONFIG[config]['train']
