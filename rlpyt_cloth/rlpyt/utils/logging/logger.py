@@ -1,4 +1,5 @@
 from enum import Enum
+import wandb
 
 from rlpyt.utils.logging.tabulate import tabulate
 from rlpyt.utils.logging.console import mkdir_p, colorize
@@ -202,7 +203,7 @@ def log(s, with_prefix=True, with_timestamp=True, color=None):
 def record_tabular(key, val, *args, **kwargs):
     # if not _disabled and not _tabular_disabled:
     _tabular.append((_tabular_prefix_str + str(key), str(val)))
-
+    wandb.log({key: val})
 
 def push_tabular_prefix(key):
     _tabular_prefixes.append(key)

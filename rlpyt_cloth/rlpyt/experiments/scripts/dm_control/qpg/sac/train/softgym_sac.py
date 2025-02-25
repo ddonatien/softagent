@@ -1,5 +1,5 @@
 import importlib
-
+import wandb
 from rlpyt.utils.launching.affinity import affinity_from_code, encode_affinity
 from rlpyt.samplers.parallel.cpu.sampler import CpuSampler
 from rlpyt.samplers.parallel.cpu.collectors import CpuResetCollector
@@ -82,5 +82,6 @@ def run_task(vv, log_dir, exp_name):
     )
     name = "sac_{}".format(vv['env_name'])
 
+    wandb.init(project="baselines", name=name, config=config)
     with logger_context(log_dir, run_ID, name, log_params=config, snapshot_mode='last'):
         runner.train()
