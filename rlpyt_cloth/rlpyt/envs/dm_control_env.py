@@ -90,6 +90,7 @@ class DMControlEnv(Env):
                  ):
         save__init__args(locals(), underscore=True)
 
+        print("load dm_control env")
         env = suite.load(domain_name=domain,
                          task_name=task,
                          task_kwargs=task_kwargs,
@@ -114,6 +115,7 @@ class DMControlEnv(Env):
         self._action_space = action_space
 
         self._step_count = 0
+        print("dm_control env loaded")
 
     def reset(self):
         self._step_count = 0
