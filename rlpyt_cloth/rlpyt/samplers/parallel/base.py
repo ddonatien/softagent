@@ -122,11 +122,12 @@ class ParallelSamplerBase(BaseSampler):
 
     def _get_env_spaces(self, EnvCls, env_kwargs):
         def get_spaces(EnvCls, env_kwargs, examples):
+            print("get_spaces")
             env = EnvCls(**env_kwargs)
             if not hasattr(env, 'spaces'):
                 env = MVPWrapper(env)
             examples['spaces'] = env.spaces
-
+            print("get_spaces done")
         mgr = mp.Manager()
         examples = mgr.dict()
         w = mp.Process(target=get_spaces, args=(EnvCls, env_kwargs, examples))
