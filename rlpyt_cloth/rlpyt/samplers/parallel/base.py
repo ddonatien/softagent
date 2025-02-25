@@ -51,7 +51,10 @@ class ParallelSamplerBase(BaseSampler):
             self._agent_init(agent, env_spaces, global_B=global_B,
                              env_ranks=env_ranks)
         else:
+            print("load env with env_kwargs", self.env_kwargs)
+            print("EnvCls", self.EnvCls.__name__)
             env = self.EnvCls(**self.env_kwargs)
+            print("env loaded")
             self._agent_init(agent, env.spaces, global_B=global_B,
                              env_ranks=env_ranks)
         examples = self._build_buffers(self.EnvCls, self.env_kwargs, bootstrap_value)
