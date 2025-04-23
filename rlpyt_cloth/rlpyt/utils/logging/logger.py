@@ -202,6 +202,8 @@ def log(s, with_prefix=True, with_timestamp=True, color=None):
 
 def record_tabular(key, val, *args, **kwargs):
     # if not _disabled and not _tabular_disabled:
+    if type(val) == torch.Tensor:
+        val = val.detach().cpu().numpy()
     _tabular.append((_tabular_prefix_str + str(key), str(val)))
     wandb.log({key: val})
 
@@ -432,8 +434,14 @@ def log_variant(log_file, variant_data):
     with open(log_file, "w") as f:
         json.dump(variant_json, f, indent=2, sort_keys=True, cls=MyEncoder)
 
+def _to_numpy(array):
+    if type(array) == torch.Tensor:
+        return array.detach().cpu().numpy()
+    else:
+        return array
 
 def record_tabular_misc_stat(key, values, placement='back'):
+    values = [_to_numpy(v) for v in values]
     if placement == 'front':
         prefix = ""
         suffix = key

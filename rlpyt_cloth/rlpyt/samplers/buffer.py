@@ -24,6 +24,7 @@ def build_samples_buffer(agent, EnvCls, env_kwargs, batch_spec, bootstrap_value=
         else:
             raise Exception('Unsupported, subprocess must be True')
     T, B = batch_spec
+    print(examples.keys())
     all_action = buffer_from_example(examples["action"], (T + 1, B), agent_shared)
     action = all_action[1:]
     prev_action = all_action[:-1]  # Writing to action will populate prev_action.

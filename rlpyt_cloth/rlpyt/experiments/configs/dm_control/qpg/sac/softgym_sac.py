@@ -35,7 +35,7 @@ config = dict(
         log_interval_steps=1e4,
     ),
     sampler=dict(
-        is_pixel=False,
+        is_pixel=True,
         batch_T=1,
         batch_B=16,
         max_decorrelation_steps=0,

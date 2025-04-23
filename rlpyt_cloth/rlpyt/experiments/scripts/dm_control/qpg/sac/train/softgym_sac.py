@@ -49,7 +49,7 @@ def run_task(vv, log_dir, exp_name):
     config.update(**vv)
     # config["env"] = env_arg_dict[config['env_name']]
     vv['env_kwargs']['headless'] = True
-    vv['env_kwargs']['render'] = False
+    vv['env_kwargs']['render'] = True
 
     sac_module = 'rlpyt.algos.qpg.{}'.format(config['sac_module'])
     sac_agent_module = 'rlpyt.agents.qpg.{}'.format(config['sac_agent_module'])

@@ -249,7 +249,7 @@ class MinibatchRlEval(MinibatchRlBase):
                 # print('sample time:', st2 - st)
                 self.agent.train_mode(itr)
                 opt_info = self.algo.optimize_agent(itr, samples)
-                print('train time:', time.time() - st2)
+                # print('train time:', time.time() - st2)
                 self.store_diagnostics(itr, traj_infos, opt_info)
                 if (itr + 1) % self.log_interval_itrs == 0:
                     eval_traj_infos, eval_time = self.evaluate_agent(itr)
